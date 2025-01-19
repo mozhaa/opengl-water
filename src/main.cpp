@@ -168,6 +168,8 @@ int main(int argc, char* argv[]) try {
             W.update_heights(time);
         }
 
+        caustic.set_parameters(button_down, dt);
+
         camera.update(button_down, dt);
 
         caustic.update(W.VAO, W.indices, W.heights_texture, lighting.sun_direction);

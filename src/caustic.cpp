@@ -7,7 +7,7 @@
 
 #include "shaderload.h"
 
-caustic_drawer::caustic_drawer(std::string texture_name) {
+caustic_drawer::caustic_drawer(std::string texture_name) : factor(0.12f), power(4.5f) {
     program = create_program({
         std::string(SHADERS_DIR) + "/caustic_draw.vert",
         std::string(SHADERS_DIR) + "/caustic_draw.frag",
@@ -48,7 +48,7 @@ caustic_drawer::caustic_drawer(std::string texture_name) {
     glGenTextures(1, &caustic_texture);
     glBindTexture(GL_TEXTURE_2D, caustic_texture);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width * 4, height * 4, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -72,7 +72,7 @@ void caustic_drawer::update(GLuint water_VAO, std::vector<uint32_t>& water_indic
     //                    width, height, 1);
     glUseProgram(copy_program);
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-    glViewport(0, 0, width, height);
+    glViewport(0, 0, width * 4, height * 4);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, pool_texture);
@@ -85,18 +85,38 @@ void caustic_drawer::update(GLuint water_VAO, std::vector<uint32_t>& water_indic
     glUseProgram(program);
     
     glEnable(GL_BLEND);
-    // glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    glBlendFunc(GL_ZERO, GL_ONE);
+    glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, heights_texture);
     glUniform1i(glGetUniformLocation(program, "heights_texture"), 0);
 
     glUniform3fv(glGetUniformLocation(program, "sun_direction"), 1, reinterpret_cast<float *>(&sun_direction));
+    glUniform1f(glGetUniformLocation(program, "factor"), factor);
+    glUniform1f(glGetUniformLocation(program, "power"), power);
 
     glBindVertexArray(water_VAO);
     glDrawElements(GL_TRIANGLE_STRIP, water_indices.size(), GL_UNSIGNED_INT, NULL);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDisable(GL_BLEND);
+}
+
+void caustic_drawer::set_parameters(std::map<SDL_Keycode, bool>& button_down, float dt) {
+    if (button_down[SDLK_LEFTBRACKET]) {
+        power *= 1 / 1.1f;
+        LOG(INFO) << "power=" << power << ", factor=" << factor;
+    }
+    if (button_down[SDLK_RIGHTBRACKET]) {
+        power *= 1.1f;
+        LOG(INFO) << "power=" << power << ", factor=" << factor;
+    }
+    if (button_down[SDLK_o]) {
+        factor *= 1 / 1.01f;
+        LOG(INFO) << "power=" << power << ", factor=" << factor;
+    }
+    if (button_down[SDLK_p]) {
+        factor *= 1.01f;
+        LOG(INFO) << "power=" << power << ", factor=" << factor;
+    }
 }

@@ -15,6 +15,9 @@ vec2 get_pool_texcoord(vec3 position, vec3 dir) {
     return (position.xz + k * dir.xz) * 0.5 + vec2(0.5);
 }
 
+out vec3 sky_pos;
+out vec3 pool_pos;
+
 void main() {
     vec4 texvalue = texture(heights_texture, in_position);
     vec3 position = vec3(in_position.x * 2.0 - 1.0, texvalue.w + 0.5, in_position.y * 2.0 - 1.0);
@@ -29,4 +32,7 @@ void main() {
 
     vec2 texcoord = get_pool_texcoord(position, refracted_dir);
     gl_Position = vec4(texcoord * 2.0 - 1.0, 0.0, 1.0);
+
+    sky_pos = position - dot(position, normalize(sun_direction)) * sun_direction;
+    pool_pos = vec3(texcoord.x, 0.0, texcoord.y);
 }
