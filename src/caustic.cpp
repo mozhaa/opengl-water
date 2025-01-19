@@ -85,7 +85,8 @@ void caustic_drawer::update(GLuint water_VAO, std::vector<uint32_t>& water_indic
     glUseProgram(program);
     
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glBlendFunc(GL_ZERO, GL_ONE);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, heights_texture);
