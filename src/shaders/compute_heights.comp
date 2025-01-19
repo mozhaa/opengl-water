@@ -1,0 +1,29 @@
+#version 430 core
+
+layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+layout (rgba32f, binding = 0) uniform image2D image;
+
+uniform float time;
+
+vec4 wave(vec2 position, vec2 center, float amplitude, float velocity, float period) {
+    float d = distance(position, center) + 0.00001;
+    float T = -d * period + time * velocity;
+    float value = amplitude * sin(T);
+    vec3 gx = vec3(1.0, amplitude * cos(T) * period * (position.x - center.x) / d, 0.0);
+    vec3 gy = vec3(0.0, amplitude * cos(T) * period * (position.y - center.y) / d, 1.0);
+    vec3 normal = -normalize(cross(gx, gy));
+    return vec4(normal, value);
+}
+
+void main() {
+    ivec2 texel_index = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 grid_size = imageSize(image);
+    vec2 point = vec2(
+        2.0 * texel_index.x / grid_size.x - 1, 
+        2.0 * texel_index.y / grid_size.y - 1
+    );
+
+    vec4 value = wave(point, vec2(0.0), 0.01, 3.0, 20.0);
+    
+    imageStore(image, texel_index, value);
+}

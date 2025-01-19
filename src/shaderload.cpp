@@ -19,6 +19,8 @@ static GLenum get_type(std::filesystem::path source_file) {
         return GL_FRAGMENT_SHADER;
     if (ext == ".geom")
         return GL_GEOMETRY_SHADER;
+    if (ext == ".comp")
+        return GL_COMPUTE_SHADER;
     throw std::runtime_error("Unknown shader type: \"" + ext + "\"");
 };
 

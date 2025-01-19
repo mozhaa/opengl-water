@@ -20,6 +20,7 @@ INITIALIZE_EASYLOGGINGPP
 #include "camera.hpp"
 #include "lighting_settings.hpp"
 #include "envmap.hpp"
+#include "water.hpp"
 
 
 std::string to_string(std::string_view str) {
@@ -97,9 +98,10 @@ int main(int argc, char* argv[]) try {
     std::map<SDL_Keycode, bool> button_down;
 
     pool P("pool.jpg");
+    water W(128, 128);
     camera_settings camera(width, height);
     environment_map envmap("forest.jpg");
-    lighting_settings lighting = {
+    lighting_settings pool_lighting = {
         glm::vec3(0.1),
         glm::vec3(0.1),
         glm::vec3(0.6),
@@ -107,9 +109,18 @@ int main(int argc, char* argv[]) try {
         glm::vec3(0.8, 1.0, 0.9),
         32.0,
     };
+    lighting_settings water_lighting = {
+        glm::vec3(0.4),
+        glm::vec3(0.1),
+        glm::vec3(0.7),
+        glm::vec3(1.0, 1.0, 0.0),
+        glm::vec3(0.8, 1.0, 0.9),
+        400.0,
+    };
 
     glClearColor(0.8f, 0.8f, 1.f, 0.f);
 
+    bool paused = false;
     bool running = true;
     while (running) {
         for (SDL_Event event; SDL_PollEvent(&event);) switch (event.type)
@@ -130,6 +141,10 @@ int main(int argc, char* argv[]) try {
             break;
         case SDL_KEYDOWN:
             button_down[event.key.keysym.sym] = true;
+
+            if (event.key.keysym.sym == SDLK_SPACE)
+                paused = !paused;
+
             break;
         case SDL_KEYUP:
             button_down[event.key.keysym.sym] = false;
@@ -142,14 +157,19 @@ int main(int argc, char* argv[]) try {
         auto now = std::chrono::high_resolution_clock::now();
         float dt = std::chrono::duration_cast<std::chrono::duration<float>>(now - last_frame_start).count();
         last_frame_start = now;
-        time += dt;
+        if (!paused) {
+            time += dt;
+
+            W.update_heights(time);
+        }
 
         camera.update(button_down, dt);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         envmap.draw(camera);
-        P.draw(camera, lighting);
+        P.draw(camera, pool_lighting);
+        W.draw(camera, water_lighting);
 
         SDL_GL_SwapWindow(window);
     }
