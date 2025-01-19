@@ -90,8 +90,8 @@ void water::draw(camera_settings &camera, lighting_settings &lighting, environme
     glUniform3fv(glGetUniformLocation(program, "camera_position"), 1, reinterpret_cast<float *>(&camera.camera_position));
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, heights.texture);
-    // glBindTexture(GL_TEXTURE_2D, heights_texture);
+    // glBindTexture(GL_TEXTURE_2D_ARRAY, heights.texture);
+    glBindTexture(GL_TEXTURE_2D, heights_texture);
     glUniform1i(glGetUniformLocation(program, "heights_texture"), 0);
     glUniform1f(glGetUniformLocation(program, "heights_texture_i"), (float)(frame_idx % 100));
 

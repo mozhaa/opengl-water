@@ -88,8 +88,8 @@ void caustic_drawer::update(GLuint water_VAO, std::vector<uint32_t>& water_indic
     glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
 
     glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, heights_texture);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, heights_texture);
+    glBindTexture(GL_TEXTURE_2D, heights_texture);
+    // glBindTexture(GL_TEXTURE_2D_ARRAY, heights_texture);
     glUniform1i(glGetUniformLocation(program, "heights_texture"), 0);
     glUniform1f(glGetUniformLocation(program, "heights_texture_i"), (float)(frame_idx % 100));
 

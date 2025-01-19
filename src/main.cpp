@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) try {
     caustic_drawer caustic("pool.jpg");
     camera_settings camera(width, height);
     environment_map envmap("forest.jpg");
-    prepared_heights_texture heights("waves2.dat");
+    prepared_heights_texture heights("waves1.dat");
     lighting_settings lighting = {
         glm::vec3(0.1),
         glm::vec3(0.1),
@@ -168,15 +168,15 @@ int main(int argc, char* argv[]) try {
         if (!paused) {
             time += dt;
 
-            // W.update_heights(time);
+            W.update_heights(time);
         }
 
         caustic.set_parameters(button_down, dt);
 
         camera.update(button_down, dt);
 
-        caustic.update(W.VAO, W.indices, heights.texture, lighting.sun_direction, frame_idx);
-        // caustic.update(W.VAO, W.indices, W.heights_texture, lighting.sun_direction);
+        // caustic.update(W.VAO, W.indices, heights.texture, lighting.sun_direction, frame_idx);
+        caustic.update(W.VAO, W.indices, W.heights_texture, lighting.sun_direction, frame_idx);
         // restore viewport after writing to caustics fbo
         glViewport(0, 0, width, height);
 
