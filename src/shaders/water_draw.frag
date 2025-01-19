@@ -40,7 +40,7 @@ void main() {
     vec3 diffuse_light = sun_color * albedo * light_factor;
     vec3 specular_light = specular_strength * sun_color * pow(max(0.0, dot(reflect_dir, view_dir)), power);
 
-    vec3 reflected_light = get_envmap(reflect_dir);
+    vec3 reflected_light = get_envmap(reflect(-view_dir, normal));
     
     out_color = vec4((ambient_light + diffuse_light + specular_light) * (1 - reflect_ratio) + reflected_light * reflect_ratio, 1.0);
 }
