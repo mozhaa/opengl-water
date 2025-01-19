@@ -6,10 +6,12 @@
 
 #include "camera.hpp"
 #include "lighting_settings.hpp"
+#include "caustic.hpp"
 
 struct pool {
-    GLuint program, texture, VAO, VBO;
+    GLuint program, VAO, VBO;
+    int width, height;
 
-    pool(std::string texture_fp);
-    void draw(camera_settings& camera, lighting_settings& lighting);
+    pool();
+    void draw(camera_settings& camera, lighting_settings& lighting, caustic_drawer& caustic);
 };

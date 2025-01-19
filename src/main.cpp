@@ -21,6 +21,7 @@ INITIALIZE_EASYLOGGINGPP
 #include "lighting_settings.hpp"
 #include "envmap.hpp"
 #include "water.hpp"
+#include "caustic.hpp"
 
 
 std::string to_string(std::string_view str) {
@@ -97,8 +98,9 @@ int main(int argc, char* argv[]) try {
     float time = 0.f;
     std::map<SDL_Keycode, bool> button_down;
 
-    pool P("pool.jpg");
+    pool P;
     water W(128, 128);
+    caustic_drawer caustic("pool.jpg");
     camera_settings camera(width, height);
     environment_map envmap("forest.jpg");
     lighting_settings pool_lighting = {
@@ -165,11 +167,15 @@ int main(int argc, char* argv[]) try {
 
         camera.update(button_down, dt);
 
+        caustic.update(W.VAO, W.indices, W.heights_texture, pool_lighting.sun_direction);
+        // restore viewport after writing to caustics fbo
+        glViewport(0, 0, width, height);
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         envmap.draw(camera);
-        P.draw(camera, pool_lighting);
-        W.draw(camera, water_lighting, envmap, P);
+        P.draw(camera, pool_lighting, caustic);
+        W.draw(camera, water_lighting, envmap, caustic);
 
         SDL_GL_SwapWindow(window);
     }

@@ -55,7 +55,6 @@ water::water(int grid_width, int grid_height) : base_height(0.5f), grid_width(gr
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -78,7 +77,7 @@ void water::update_heights(float time) {
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 }
 
-void water::draw(camera_settings &camera, lighting_settings &lighting, environment_map& envmap, pool& P) {
+void water::draw(camera_settings &camera, lighting_settings &lighting, environment_map& envmap, caustic_drawer& caustic) {
     glUseProgram(program);
 
     glEnable(GL_DEPTH_TEST);
@@ -97,7 +96,7 @@ void water::draw(camera_settings &camera, lighting_settings &lighting, environme
     glUniform1i(glGetUniformLocation(program, "envmap"), 1);
 
     glActiveTexture(GL_TEXTURE0 + 2);
-    glBindTexture(GL_TEXTURE_2D, P.texture);
+    glBindTexture(GL_TEXTURE_2D, caustic.caustic_texture);
     glUniform1i(glGetUniformLocation(program, "pool_texture"), 2);
 
     lighting.set_uniforms(program);

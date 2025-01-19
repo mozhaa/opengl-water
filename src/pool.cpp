@@ -8,7 +8,7 @@
 
 #include "shaderload.h"
 
-pool::pool(std::string texture_name) {
+pool::pool() {
     program = create_program({
         std::string(SHADERS_DIR) + "/pool_draw.vert",
         std::string(SHADERS_DIR) + "/pool_draw.frag",
@@ -32,37 +32,17 @@ pool::pool(std::string texture_name) {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(decltype(vertices)::value_type), (void*)(0));
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(decltype(vertices)::value_type), (void*)(sizeof(glm::vec3)));
-
-    glEnable(GL_TEXTURE_2D);
-    glGenTextures(1, &texture);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-    int width, height, channels;
-    std::string image_path = std::string(PROJECT_ROOT) + "/resources/" + texture_name;
-    auto pixels = stbi_load(image_path.c_str(), &width, &height, &channels, 4);
-
-    LOG(INFO) << "Image loaded, width=" << width << ", height=" << height << std::endl;
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-
-    stbi_image_free(pixels);
 }
 
-void pool::draw(camera_settings& camera, lighting_settings& lighting) {
+void pool::draw(camera_settings& camera, lighting_settings& lighting, caustic_drawer& caustic) {
     glUseProgram(program);
 
     glEnable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
     
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(GL_TEXTURE_2D, caustic.caustic_texture);
 
     glUniform1i(glGetUniformLocation(program, "pool_texture"), 0);
 

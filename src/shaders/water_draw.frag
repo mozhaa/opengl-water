@@ -49,7 +49,10 @@ void main() {
     
     vec3 view_dir = normalize(position - camera_position);
 
-    float theta = acos(dot(-view_dir, normal));
+    float cos_theta = dot(-view_dir, normal);
+    if (cos_theta < 0)
+        discard;
+    float theta = acos(cos_theta);
     float alpha = asin(sin(theta) * air_eta / water_eta);
     float h = sin(theta - alpha) / (sin(alpha) + 0.0000001);
     vec3 refracted_dir = normalize(view_dir - normal * h);
