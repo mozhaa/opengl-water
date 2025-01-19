@@ -10,22 +10,15 @@ INITIALIZE_EASYLOGGINGPP
 
 #include <GL/glew.h>
 
-#define GLM_FORCE_SWIZZLE
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/vec3.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/ext/matrix_transform.hpp>
-#include <glm/ext/matrix_clip_space.hpp>
-#include <glm/ext/scalar_constants.hpp>
-#include <glm/gtx/string_cast.hpp>
-
 #include <stdexcept>
 #include <iostream>
 #include <chrono>
 #include <vector>
 #include <cmath>
 
-#include "shaderload.h"
+#include "pool.hpp"
+#include "camera.hpp"
+#include "lighting_settings.hpp"
 
 
 std::string to_string(std::string_view str) {
@@ -86,11 +79,6 @@ void glew_init() {
         throw std::runtime_error("OpenGL 3.3 is not supported");
 }
 
-struct rectangle {
-    glm::vec2 position;
-    glm::vec2 size;
-};
-
 int main(int argc, char* argv[]) try {
     START_EASYLOGGINGPP(argc, argv);
     sdl_init();
@@ -103,42 +91,22 @@ int main(int argc, char* argv[]) try {
     SDL_GetWindowSize(window, &width, &height);
     glViewport(0, 0, width, height);
 
-    const std::string project_root = PROJECT_ROOT;
-    const std::string shaders_dir = SHADERS_DIR;
-
-    auto program = create_program({
-        shaders_dir + "/shader.vert", 
-        shaders_dir + "/shader.geom", 
-        shaders_dir + "/shader.frag",
-    });
-
     auto last_frame_start = std::chrono::high_resolution_clock::now();
     float time = 0.f;
     std::map<SDL_Keycode, bool> button_down;
 
-    glClearColor(0.8f, 0.8f, 1.f, 0.f);
-
-
-    GLuint VAO, VBO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-    
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_VERTEX_ARRAY, VBO);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(rectangle), (void*)(offsetof(rectangle, position)));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(rectangle), (void*)(offsetof(rectangle, size)));
-
-    rectangle r = {
-        {0.f, 0.f},
-        {1.f, 1.f}
+    pool P("pool.jpg");
+    camera_settings camera(width, height);
+    lighting_settings lighting = {
+        glm::vec3(0.2),
+        glm::vec3(0.2),
+        glm::vec3(0.8),
+        glm::vec3(0.0, 1.0, 0.0),
+        glm::vec3(1.0, 1.0, 1.0),
+        32.0,
     };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle), &r, GL_STATIC_DRAW);
 
-    LOG(INFO) << r.position.x << " " << r.position.y;
-
+    glClearColor(0.8f, 0.8f, 1.f, 0.f);
 
     bool running = true;
     while (running) {
@@ -152,6 +120,8 @@ int main(int argc, char* argv[]) try {
             case SDL_WINDOWEVENT_RESIZED:
                 width = event.window.data1;
                 height = event.window.data2;
+                camera.width = width;
+                camera.height = height;
                 glViewport(0, 0, width, height);
                 break;
             }
@@ -169,16 +139,14 @@ int main(int argc, char* argv[]) try {
         
         auto now = std::chrono::high_resolution_clock::now();
         float dt = std::chrono::duration_cast<std::chrono::duration<float>>(now - last_frame_start).count();
+        last_frame_start = now;
         time += dt;
 
-        glm::mat4 view(1.f);
-
-        glDisable(GL_DEPTH_TEST);
+        camera.update(button_down, dt);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glUseProgram(program);
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_POINTS, 0, 1);
+        
+        P.draw(camera, lighting);
 
         SDL_GL_SwapWindow(window);
     }
