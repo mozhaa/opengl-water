@@ -28,7 +28,7 @@ vec3 get_envmap(vec3 dir) {
 }
 
 float reflect_ratio(float theta) {
-    return R0 + (1 - R0) * pow((1 - cos(theta)), 5.0);
+    return max(0.0, min(R0 + (1 - R0) * pow((1 - cos(theta)), 5.0), 1.0));
 }
 
 vec2 get_pool_texcoord(vec3 position, vec3 dir) {
@@ -40,8 +40,6 @@ void main() {
     vec3 view_dir = normalize(position - camera_position);
 
     float cos_theta = dot(-view_dir, normal);
-    if (cos_theta < 0)
-        discard;
     float theta = acos(cos_theta);
     float alpha = asin(sin(theta) * air_eta / water_eta);
     float h = sin(theta - alpha) / (sin(alpha) + 0.0000001);

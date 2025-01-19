@@ -77,19 +77,23 @@ void water::update_heights(float time) {
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 }
 
-void water::draw(camera_settings &camera, lighting_settings &lighting, environment_map& envmap, caustic_drawer& caustic) {
+void water::draw(camera_settings &camera, lighting_settings &lighting, environment_map& envmap, caustic_drawer& caustic, prepared_heights_texture& heights, int frame_idx) {
     glUseProgram(program);
 
     glEnable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
+    // glDisable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
 
     glUniformMatrix4fv(glGetUniformLocation(program, "view"), 1, GL_FALSE, reinterpret_cast<float *>(&camera.view));
     glUniformMatrix4fv(glGetUniformLocation(program, "projection"), 1, GL_FALSE, reinterpret_cast<float *>(&camera.projection));
     glUniform3fv(glGetUniformLocation(program, "camera_position"), 1, reinterpret_cast<float *>(&camera.camera_position));
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, heights_texture);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, heights.texture);
+    // glBindTexture(GL_TEXTURE_2D, heights_texture);
     glUniform1i(glGetUniformLocation(program, "heights_texture"), 0);
+    glUniform1f(glGetUniformLocation(program, "heights_texture_i"), (float)(frame_idx % 100));
 
     glActiveTexture(GL_TEXTURE0 + 1);
     glBindTexture(GL_TEXTURE_2D, envmap.texture);
@@ -106,4 +110,6 @@ void water::draw(camera_settings &camera, lighting_settings &lighting, environme
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLE_STRIP, indices.size(), GL_UNSIGNED_INT, NULL);
+
+    glCullFace(GL_BACK);
 }

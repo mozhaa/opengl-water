@@ -22,6 +22,6 @@ struct caustic_drawer {
     float factor, power;
 
     caustic_drawer(std::string texture_name);
-    void update(GLuint water_VAO, std::vector<uint32_t>& water_indices, GLuint heights_texture, glm::vec3 sun_direction);
+    void update(GLuint water_VAO, std::vector<uint32_t>& water_indices, GLuint heights_texture, glm::vec3 sun_direction, int frame_idx);
     void set_parameters(std::map<SDL_Keycode, bool>& button_down, float dt);
 };

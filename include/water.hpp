@@ -11,6 +11,7 @@
 #include "lighting_settings.hpp"
 #include "envmap.hpp"
 #include "caustic.hpp"
+#include "heights_texture.hpp"
 
 struct water {
     GLuint program, VAO, VBO, EBO, compute_program, heights_texture;
@@ -23,5 +24,5 @@ struct water {
 
     water(int grid_width, int grid_height);
     void update_heights(float time);
-    void draw(camera_settings& camera, lighting_settings& lighting, environment_map& envmap, caustic_drawer& caustic);
+    void draw(camera_settings& camera, lighting_settings& lighting, environment_map& envmap, caustic_drawer& caustic, prepared_heights_texture& heights, int frame_idx);
 };

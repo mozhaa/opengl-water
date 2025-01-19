@@ -66,7 +66,7 @@ caustic_drawer::caustic_drawer(std::string texture_name) : factor(0.02f) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void caustic_drawer::update(GLuint water_VAO, std::vector<uint32_t>& water_indices, GLuint heights_texture, glm::vec3 sun_direction) {
+void caustic_drawer::update(GLuint water_VAO, std::vector<uint32_t>& water_indices, GLuint heights_texture, glm::vec3 sun_direction, int frame_idx) {
     // glCopyImageSubData(P.texture, GL_TEXTURE_2D, 0, 0, 0, 0,
     //                    texture, GL_TEXTURE_2D, 0, 0, 0, 0,
     //                    width, height, 1);
@@ -88,8 +88,10 @@ void caustic_drawer::update(GLuint water_VAO, std::vector<uint32_t>& water_indic
     glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, heights_texture);
+    // glBindTexture(GL_TEXTURE_2D, heights_texture);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, heights_texture);
     glUniform1i(glGetUniformLocation(program, "heights_texture"), 0);
+    glUniform1f(glGetUniformLocation(program, "heights_texture_i"), (float)(frame_idx % 100));
 
     glUniform3fv(glGetUniformLocation(program, "sun_direction"), 1, reinterpret_cast<float *>(&sun_direction));
     glUniform1f(glGetUniformLocation(program, "factor"), factor);
