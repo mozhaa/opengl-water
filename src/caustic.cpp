@@ -7,7 +7,7 @@
 
 #include "shaderload.h"
 
-caustic_drawer::caustic_drawer(std::string texture_name) : factor(0.12f), power(4.5f) {
+caustic_drawer::caustic_drawer(std::string texture_name) : factor(0.02f) {
     program = create_program({
         std::string(SHADERS_DIR) + "/caustic_draw.vert",
         std::string(SHADERS_DIR) + "/caustic_draw.frag",
@@ -93,7 +93,6 @@ void caustic_drawer::update(GLuint water_VAO, std::vector<uint32_t>& water_indic
 
     glUniform3fv(glGetUniformLocation(program, "sun_direction"), 1, reinterpret_cast<float *>(&sun_direction));
     glUniform1f(glGetUniformLocation(program, "factor"), factor);
-    glUniform1f(glGetUniformLocation(program, "power"), power);
 
     glBindVertexArray(water_VAO);
     glDrawElements(GL_TRIANGLE_STRIP, water_indices.size(), GL_UNSIGNED_INT, NULL);
@@ -103,14 +102,6 @@ void caustic_drawer::update(GLuint water_VAO, std::vector<uint32_t>& water_indic
 }
 
 void caustic_drawer::set_parameters(std::map<SDL_Keycode, bool>& button_down, float dt) {
-    if (button_down[SDLK_LEFTBRACKET]) {
-        power *= 1 / 1.1f;
-        LOG(INFO) << "power=" << power << ", factor=" << factor;
-    }
-    if (button_down[SDLK_RIGHTBRACKET]) {
-        power *= 1.1f;
-        LOG(INFO) << "power=" << power << ", factor=" << factor;
-    }
     if (button_down[SDLK_o]) {
         factor *= 1 / 1.01f;
         LOG(INFO) << "power=" << power << ", factor=" << factor;

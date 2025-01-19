@@ -100,7 +100,7 @@ int main(int argc, char* argv[]) try {
     std::map<SDL_Keycode, bool> button_down;
 
     pool P;
-    water W(128, 128);
+    water W(512, 512);
     caustic_drawer caustic("pool.jpg");
     camera_settings camera(width, height);
     environment_map envmap("forest.jpg");
@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) try {
     };
 
     recorder R;
-    bool auto_recording = true;
+    bool auto_recording = false;
 
     glClearColor(0.8f, 0.8f, 1.f, 0.f);
 
