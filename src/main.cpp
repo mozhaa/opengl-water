@@ -103,19 +103,11 @@ int main(int argc, char* argv[]) try {
     caustic_drawer caustic("pool.jpg");
     camera_settings camera(width, height);
     environment_map envmap("forest.jpg");
-    lighting_settings pool_lighting = {
+    lighting_settings lighting = {
         glm::vec3(0.1),
         glm::vec3(0.1),
         glm::vec3(0.6),
-        glm::vec3(1.0, 1.0, 0.0),
-        glm::vec3(0.8, 1.0, 0.9),
-        32.0,
-    };
-    lighting_settings water_lighting = {
-        glm::vec3(0.4),
-        glm::vec3(0.1),
-        glm::vec3(1.3),
-        glm::vec3(1.0, 1.0, 0.0),
+        glm::vec3(1.0, 0.8, 0.0),
         glm::vec3(0.8, 1.0, 0.9),
         32.0,
     };
@@ -167,15 +159,15 @@ int main(int argc, char* argv[]) try {
 
         camera.update(button_down, dt);
 
-        caustic.update(W.VAO, W.indices, W.heights_texture, pool_lighting.sun_direction);
+        caustic.update(W.VAO, W.indices, W.heights_texture, lighting.sun_direction);
         // restore viewport after writing to caustics fbo
         glViewport(0, 0, width, height);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         envmap.draw(camera);
-        P.draw(camera, pool_lighting, caustic);
-        W.draw(camera, water_lighting, envmap, caustic);
+        P.draw(camera, lighting, caustic);
+        W.draw(camera, lighting, envmap, caustic);
 
         SDL_GL_SwapWindow(window);
     }

@@ -5,14 +5,10 @@ layout (location = 0) out vec4 out_color;
 uniform sampler2D envmap;
 uniform sampler2D pool_texture;
 
-uniform vec3 ambient_strength;
-uniform vec3 diffuse_strength;
-uniform vec3 specular_strength;
-
-uniform float power;
-
 uniform vec3 sun_direction;
 uniform vec3 sun_color;
+uniform float power;
+uniform float specular_strength;
 
 uniform vec3 camera_position;
 
@@ -41,12 +37,6 @@ vec2 get_pool_texcoord(vec3 position, vec3 dir) {
 }
 
 void main() {
-    vec3 albedo = vec3(0.2, 0.5, 1.0);
-
-    float cosine = dot(normal, normalize(sun_direction));
-    float light_factor = max(0.0, cosine);
-    vec3 reflect_dir = 2.0 * normal * cosine - normalize(sun_direction);
-    
     vec3 view_dir = normalize(position - camera_position);
 
     float cos_theta = dot(-view_dir, normal);
@@ -57,12 +47,10 @@ void main() {
     float h = sin(theta - alpha) / (sin(alpha) + 0.0000001);
     vec3 refracted_dir = normalize(view_dir - normal * h);
 
-    vec3 ambient_light = albedo * ambient_strength;
-    vec3 diffuse_light = sun_color * albedo * light_factor;
-    vec3 specular_light = specular_strength * sun_color * pow(max(0.0, dot(reflect_dir, -view_dir)), power);
+    float specular_factor = pow(max(0.0, dot(reflect(normalize(-sun_direction), normal), -view_dir)), power);
+    vec3 specular_light = specular_strength * sun_color * specular_factor;
 
-    vec3 water_color = ambient_light + diffuse_light + specular_light;
-    vec3 reflected_color = get_envmap(reflect(view_dir, normal));
+    vec3 reflected_color = get_envmap(reflect(view_dir, normal)) + specular_light;
     vec3 refracted_color = get_envmap(refracted_dir);
 
     vec2 texcoord = get_pool_texcoord(position, refracted_dir);
@@ -74,5 +62,4 @@ void main() {
     float r = reflect_ratio(theta);
     
     out_color = vec4(r * reflected_color + (1 - r) * refracted_color, 1.0);
-    // out_color = vec4(0.1 * water_color + 0.9 * (reflect_ratio * reflected_color + (1 - reflect_ratio) * refracted_color), 1.0);
 }

@@ -99,7 +99,10 @@ void water::draw(camera_settings &camera, lighting_settings &lighting, environme
     glBindTexture(GL_TEXTURE_2D, caustic.caustic_texture);
     glUniform1i(glGetUniformLocation(program, "pool_texture"), 2);
 
-    lighting.set_uniforms(program);
+    glUniform3fv(glGetUniformLocation(program, "sun_direction"), 1, reinterpret_cast<float *>(&lighting.sun_direction));
+    glUniform3fv(glGetUniformLocation(program, "sun_color"), 1, reinterpret_cast<float *>(&lighting.sun_color));
+    glUniform1f(glGetUniformLocation(program, "power"), lighting.power);
+    glUniform1f(glGetUniformLocation(program, "specular_strength"), 5.5);
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLE_STRIP, indices.size(), GL_UNSIGNED_INT, NULL);
