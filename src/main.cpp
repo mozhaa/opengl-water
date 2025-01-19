@@ -19,6 +19,7 @@ INITIALIZE_EASYLOGGINGPP
 #include "pool.hpp"
 #include "camera.hpp"
 #include "lighting_settings.hpp"
+#include "envmap.hpp"
 
 
 std::string to_string(std::string_view str) {
@@ -97,12 +98,13 @@ int main(int argc, char* argv[]) try {
 
     pool P("pool.jpg");
     camera_settings camera(width, height);
+    environment_map envmap("forest.jpg");
     lighting_settings lighting = {
-        glm::vec3(0.2),
-        glm::vec3(0.2),
-        glm::vec3(0.8),
-        glm::vec3(0.0, 1.0, 0.0),
-        glm::vec3(1.0, 1.0, 1.0),
+        glm::vec3(0.1),
+        glm::vec3(0.1),
+        glm::vec3(0.6),
+        glm::vec3(1.0, 1.0, 0.0),
+        glm::vec3(0.8, 1.0, 0.9),
         32.0,
     };
 
@@ -146,6 +148,7 @@ int main(int argc, char* argv[]) try {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
+        envmap.draw(camera);
         P.draw(camera, lighting);
 
         SDL_GL_SwapWindow(window);
