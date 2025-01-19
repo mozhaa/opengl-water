@@ -112,10 +112,10 @@ int main(int argc, char* argv[]) try {
     lighting_settings water_lighting = {
         glm::vec3(0.4),
         glm::vec3(0.1),
-        glm::vec3(0.7),
+        glm::vec3(1.3),
         glm::vec3(1.0, 1.0, 0.0),
         glm::vec3(0.8, 1.0, 0.9),
-        400.0,
+        32.0,
     };
 
     glClearColor(0.8f, 0.8f, 1.f, 0.f);
@@ -169,7 +169,7 @@ int main(int argc, char* argv[]) try {
         
         envmap.draw(camera);
         P.draw(camera, pool_lighting);
-        W.draw(camera, water_lighting);
+        W.draw(camera, water_lighting, envmap);
 
         SDL_GL_SwapWindow(window);
     }

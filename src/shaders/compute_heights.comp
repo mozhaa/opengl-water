@@ -24,10 +24,10 @@ void main() {
     );
 
     vec4 value = (
-        wave(point, vec2(0.0), 0.01, 6.0, 50.0) +
-        wave(point, vec2(1.0, -1.0), 0.004, 5.78, 61.3) +
-        wave(point, vec2(1.0), 0.02, 3.0, 26.2) +
-        wave(point, vec2(-1.0), 0.05, 1.0, 2.0)
+        wave(point, vec2(0.0), 0.005, 6.0, 50.0) +
+        wave(point, vec2(1.0, -1.0), 0.0008, 5.78, 61.3) +
+        wave(point, vec2(1.0), 0.007, 3.0, 26.2) +
+        wave(point, vec2(-1.0), 0.02, 1.0, 2.0)
     );
 
     value.xyz = normalize(value.xyz);
