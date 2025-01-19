@@ -6,11 +6,11 @@
 camera_settings::camera_settings(int width, int height)
     : width(width),
       height(height),
-      view_angle(0.4f),
+      view_angle(0.65f),
       camera_distance(1.6f),
       camera_height(0.0f),
       camera_rotation(1.6f),
-      horizontal_rotation_speed(1.5f),
+      horizontal_rotation_speed(0.8f),
       vertical_rotation_speed(0.3f),
       scale_speed(2.f),
       near(0.01f),

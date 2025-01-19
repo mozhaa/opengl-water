@@ -22,6 +22,7 @@ INITIALIZE_EASYLOGGINGPP
 #include "envmap.hpp"
 #include "water.hpp"
 #include "caustic.hpp"
+#include "recording.hpp"
 
 
 std::string to_string(std::string_view str) {
@@ -112,6 +113,9 @@ int main(int argc, char* argv[]) try {
         32.0,
     };
 
+    recorder R;
+    bool auto_recording = true;
+
     glClearColor(0.8f, 0.8f, 1.f, 0.f);
 
     bool paused = false;
@@ -148,9 +152,16 @@ int main(int argc, char* argv[]) try {
         if (!running)
             break;
         
+        if (auto_recording && !R.is_recording())
+            R.start_recording(width, height);
+
         auto now = std::chrono::high_resolution_clock::now();
         float dt = std::chrono::duration_cast<std::chrono::duration<float>>(now - last_frame_start).count();
         last_frame_start = now;
+
+        if (R.is_recording())
+            dt = 1.f / R.fps;
+        
         if (!paused) {
             time += dt;
 
@@ -169,8 +180,14 @@ int main(int argc, char* argv[]) try {
         P.draw(camera, lighting, caustic);
         W.draw(camera, lighting, envmap, caustic);
 
+        if (R.is_recording())
+            R.save_frame();
+
         SDL_GL_SwapWindow(window);
     }
+
+    if (R.is_recording())
+        R.stop_recording();
 
 } catch (std::exception const & e) {
     std::cerr << e.what() << std::endl;
