@@ -78,7 +78,7 @@ void water::update_heights(float time) {
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 }
 
-void water::draw(camera_settings &camera, lighting_settings &lighting, environment_map& envmap) {
+void water::draw(camera_settings &camera, lighting_settings &lighting, environment_map& envmap, pool& P) {
     glUseProgram(program);
 
     glEnable(GL_DEPTH_TEST);
@@ -95,6 +95,10 @@ void water::draw(camera_settings &camera, lighting_settings &lighting, environme
     glActiveTexture(GL_TEXTURE0 + 1);
     glBindTexture(GL_TEXTURE_2D, envmap.texture);
     glUniform1i(glGetUniformLocation(program, "envmap"), 1);
+
+    glActiveTexture(GL_TEXTURE0 + 2);
+    glBindTexture(GL_TEXTURE_2D, P.texture);
+    glUniform1i(glGetUniformLocation(program, "pool_texture"), 2);
 
     lighting.set_uniforms(program);
 

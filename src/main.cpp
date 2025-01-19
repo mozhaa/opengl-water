@@ -169,7 +169,7 @@ int main(int argc, char* argv[]) try {
         
         envmap.draw(camera);
         P.draw(camera, pool_lighting);
-        W.draw(camera, water_lighting, envmap);
+        W.draw(camera, water_lighting, envmap, P);
 
         SDL_GL_SwapWindow(window);
     }
