@@ -7,7 +7,7 @@
 #### Assignment PDF: [assignment.pdf](assignment.pdf)
 
 ### Water Height Function
-The water heights map is generated using sum of radial sine waves with random centers, so that `amplitude * frequency` is constant (large waves have high amlitude and low frequency, and small waves have low amplitude and high frequency).
+The water heights map is generated using sum of radial sine waves with random centers, so that `amplitude * frequency` for each wave is constant (large waves have high amlitude and low frequency, and small waves have low amplitude and high frequency).
 
 ### Reflection + Refraction
 + The reflected ray is derived from law of reflection;
